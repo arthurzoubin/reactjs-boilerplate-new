@@ -7,7 +7,7 @@ import NavBar from './NavBar';
 import HeaderLink from './HeaderLink';
 import Banner from './banner.jpg';
 import messages from './messages';
-import styles from './HeaderStyles.module.scss'
+import styles from './HeaderStyles.module.scss';
 
 /* eslint-disable react/prefer-stateless-function */
 class Header extends React.Component {

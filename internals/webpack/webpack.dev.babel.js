@@ -6,7 +6,7 @@ const path = require('path');
 const webpack = require('webpack');
 const HtmlWebpackPlugin = require('html-webpack-plugin');
 const CircularDependencyPlugin = require('circular-dependency-plugin');
-const MiniCssExtractPlugin = require("mini-css-extract-plugin");
+const MiniCssExtractPlugin = require('mini-css-extract-plugin');
 
 module.exports = require('./webpack.base.babel')({
   mode: 'development',
@@ -33,8 +33,8 @@ module.exports = require('./webpack.base.babel')({
           name: 'styles',
           test: /\.css$/,
           chunks: 'all',
-          enforce: true
-        }
+          enforce: true,
+        },
       },
     },
   },
@@ -61,13 +61,10 @@ module.exports = require('./webpack.base.babel')({
       },
       {
         test: /\.s?css$/,
-        exclude: [
-          /module\.s?css$/,
-          /node_modules/,
-        ],
+        exclude: [/module\.s?css$/, /node_modules/],
         use: [
           MiniCssExtractPlugin.loader,
-          "css-loader",
+          'css-loader',
           { loader: 'sass-loader', options: { outputStyle: 'expanded' } },
         ],
       },

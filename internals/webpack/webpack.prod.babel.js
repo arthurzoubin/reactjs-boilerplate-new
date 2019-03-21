@@ -6,7 +6,7 @@ const OfflinePlugin = require('offline-plugin');
 const { HashedModuleIdsPlugin } = require('webpack');
 const TerserPlugin = require('terser-webpack-plugin');
 const CompressionPlugin = require('compression-webpack-plugin');
-const MiniCssExtractPlugin = require("mini-css-extract-plugin");
+const MiniCssExtractPlugin = require('mini-css-extract-plugin');
 
 module.exports = require('./webpack.base.babel')({
   mode: 'production',
@@ -71,7 +71,7 @@ module.exports = require('./webpack.base.babel')({
           name: 'styles',
           test: /\.css$/,
           chunks: 'all',
-          enforce: true
+          enforce: true,
         },
       },
     },
@@ -100,15 +100,12 @@ module.exports = require('./webpack.base.babel')({
       },
       {
         test: /\.s?css$/,
-        exclude: [
-          /module\.s?css$/,
-          /node_modules/,
-        ],
+        exclude: [/module\.s?css$/, /node_modules/],
         use: [
           MiniCssExtractPlugin.loader,
-          "css-loader",
-          { 
-            loader: 'sass-loader', 
+          'css-loader',
+          {
+            loader: 'sass-loader',
             options: { outputStyle: 'compressed' },
           },
         ],
@@ -167,10 +164,7 @@ module.exports = require('./webpack.base.babel')({
         // All chunks marked as `additional`, loaded after main section
         // and do not prevent SW to install. Change to `optional` if
         // do not want them to be preloaded at all (cached only when first loaded)
-        additional: [
-          '*.chunk.js',
-          '*.css',
-        ],
+        additional: ['*.chunk.js', '*.css'],
       },
 
       // Removes warning for about `additional` section usage
