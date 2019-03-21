@@ -6,6 +6,7 @@ const path = require('path');
 const webpack = require('webpack');
 const HtmlWebpackPlugin = require('html-webpack-plugin');
 const CircularDependencyPlugin = require('circular-dependency-plugin');
+const MiniCssExtractPlugin = require("mini-css-extract-plugin");
 
 module.exports = require('./webpack.base.babel')({
   mode: 'development',
@@ -14,6 +15,7 @@ module.exports = require('./webpack.base.babel')({
   entry: [
     require.resolve('react-app-polyfill/ie11'),
     'webpack-hot-middleware/client?reload=true',
+    path.join(process.cwd(), 'app/styles/main.scss'),
     path.join(process.cwd(), 'app/app.js'), // Start with js/app.js
   ],
 
@@ -26,9 +28,67 @@ module.exports = require('./webpack.base.babel')({
   optimization: {
     splitChunks: {
       chunks: 'all',
+      cacheGroups: {
+        styles: {
+          name: 'styles',
+          test: /\.css$/,
+          chunks: 'all',
+          enforce: true
+        }
+      },
     },
   },
-
+  // Add development module
+  module: {
+    rules: [
+      {
+        // Preprocess our own .css files
+        // This is the place to add your own loaders (e.g. sass/less etc.)
+        // for a list of loaders, see https://webpack.js.org/loaders/#styling
+        test: /module\.s?css$/,
+        exclude: /node_modules/,
+        use: [
+          { loader: 'style-loader' },
+          {
+            loader: 'css-loader',
+            options: { modules: true, localIdentName: '[name]-[local]' },
+          },
+          {
+            loader: 'sass-loader',
+            options: { outputStyle: 'expanded' },
+          },
+        ],
+      },
+      {
+        test: /\.s?css$/,
+        exclude: [
+          /module\.s?css$/,
+          /node_modules/,
+        ],
+        use: [
+          MiniCssExtractPlugin.loader,
+          "css-loader",
+          { loader: 'sass-loader', options: { outputStyle: 'expanded' } },
+        ],
+      },
+      {
+        // Preprocess 3rd party .css files located in node_modules
+        test: /\.css$/,
+        include: /node_modules/,
+        use: [
+          { loader: 'style-loader' },
+          {
+            loader: 'css-loader',
+            options: { modules: true, localIdentName: '[name]-[local]' },
+          },
+          {
+            loader: 'sass-loader',
+            options: { outputStyle: 'expanded' },
+          },
+        ],
+      },
+    ],
+  },
   // Add development plugins
   plugins: [
     new webpack.HotModuleReplacementPlugin(), // Tell webpack we want hot reloading

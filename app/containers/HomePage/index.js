@@ -32,6 +32,7 @@ import { changeUsername } from './actions';
 import { makeSelectUsername } from './selectors';
 import reducer from './reducer';
 import saga from './saga';
+import styles from './HomePageStyles.module.scss';
 
 /* eslint-disable react/prefer-stateless-function */
 export class HomePage extends React.PureComponent {
@@ -61,7 +62,7 @@ export class HomePage extends React.PureComponent {
             content="A React.js Boilerplate application homepage"
           />
         </Helmet>
-        <div>
+        <div className={styles.container}>
           <CenteredSection>
             <H2>
               <FormattedMessage {...messages.startProjectHeader} />

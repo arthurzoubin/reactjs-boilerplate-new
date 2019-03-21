@@ -6,6 +6,7 @@ const OfflinePlugin = require('offline-plugin');
 const { HashedModuleIdsPlugin } = require('webpack');
 const TerserPlugin = require('terser-webpack-plugin');
 const CompressionPlugin = require('compression-webpack-plugin');
+const MiniCssExtractPlugin = require("mini-css-extract-plugin");
 
 module.exports = require('./webpack.base.babel')({
   mode: 'production',
@@ -13,6 +14,7 @@ module.exports = require('./webpack.base.babel')({
   // In production, we skip all hot-reloading stuff
   entry: [
     require.resolve('react-app-polyfill/ie11'),
+    path.join(process.cwd(), 'app/styles/main.scss'),
     path.join(process.cwd(), 'app/app.js'),
   ],
 
@@ -65,11 +67,70 @@ module.exports = require('./webpack.base.babel')({
           reuseExistingChunk: true,
           enforce: true,
         },
+        styles: {
+          name: 'styles',
+          test: /\.css$/,
+          chunks: 'all',
+          enforce: true
+        },
       },
     },
     runtimeChunk: true,
   },
-
+  // Add production module
+  module: {
+    rules: [
+      {
+        // Preprocess our own .css files
+        // This is the place to add your own loaders (e.g. sass/less etc.)
+        // for a list of loaders, see https://webpack.js.org/loaders/#styling
+        test: /module\.s?css$/,
+        exclude: /node_modules/,
+        use: [
+          MiniCssExtractPlugin.loader,
+          {
+            loader: 'css-loader',
+            options: { modules: true, localIdentName: '[name]-[local]' },
+          },
+          {
+            loader: 'sass-loader',
+            options: { outputStyle: 'compressed' },
+          },
+        ],
+      },
+      {
+        test: /\.s?css$/,
+        exclude: [
+          /module\.s?css$/,
+          /node_modules/,
+        ],
+        use: [
+          MiniCssExtractPlugin.loader,
+          "css-loader",
+          { 
+            loader: 'sass-loader', 
+            options: { outputStyle: 'compressed' },
+          },
+        ],
+      },
+      {
+        // Preprocess 3rd party .css files located in node_modules
+        test: /\.css$/,
+        include: /node_modules/,
+        use: [
+          { loader: 'style-loader' },
+          {
+            loader: 'css-loader',
+            options: { modules: true, localIdentName: '[name]-[local]' },
+          },
+          {
+            loader: 'sass-loader',
+            options: { outputStyle: 'expanded' },
+          },
+        ],
+      },
+    ],
+  },
   plugins: [
     // Minify and optimize the index.html
     new HtmlWebpackPlugin({
@@ -106,7 +167,10 @@ module.exports = require('./webpack.base.babel')({
         // All chunks marked as `additional`, loaded after main section
         // and do not prevent SW to install. Change to `optional` if
         // do not want them to be preloaded at all (cached only when first loaded)
-        additional: ['*.chunk.js'],
+        additional: [
+          '*.chunk.js',
+          '*.css',
+        ],
       },
 
       // Removes warning for about `additional` section usage
